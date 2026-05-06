@@ -29,7 +29,7 @@
 
 * Welcome to the **backend-learning-hub-26** ! 
 * This repository is your complete guide to becoming a professional backend developer. 
-* Designed for our college's **OSC ASU** student activity **Backend Committee**, this curriculum takes you from basics all the way to deploying microservices in production.
+* Designed for our college's **OSC ASU** student activity **Backend Committee**.
 
 ---
 ### 🎯 What You'll Learn
