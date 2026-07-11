@@ -469,29 +469,341 @@ Remember callback hell? Promises make async code:
 - ✅ Easier to error handle
 - ✅ Easier to chain operations
 - ✅ Composable and reusable
+---
+## What is a Promise?
+
+A **Promise** is an object that represents the **result of an asynchronous operation**.
+
+In simple words:
+
+> **A Promise is a placeholder for a value that you will receive in the future.**
+
+Think of ordering food from a restaurant.
+
+- You place your order.
+- The food is not ready immediately.
+- The restaurant promises that later it will either:
+  - Deliver your food ✅
+  - Tell you something went wrong ❌
+
+A JavaScript Promise works exactly the same way.
+
+---
+
+## Creating a Promise
+
+```js
+const promise = new Promise((resolve, reject) => {
+
+});
+```
+
+This means:
+
+> "Create a Promise and tell me what asynchronous work you want to perform."
+
+---
+
+## What are `resolve` and `reject`?
+
+When creating a Promise, JavaScript automatically provides **two functions**:
+
+```js
+(resolve, reject)
+```
+
+They are simply **function parameters**.
+
+JavaScript could have named them anything.
+
+For example:
+
+```js
+new Promise((success, failure) => {
+
+});
+```
+
+works exactly the same.
+
+However, everyone uses the names:
+
+- `resolve`
+- `reject`
+
+because they clearly describe their purpose.
+
+---
+
+## What does `resolve()` do?
+
+`resolve()` tells JavaScript:
+
+> "The operation finished successfully."
+
+Example:
+
+```js
+const promise = new Promise((resolve, reject) => {
+    resolve("Done!");
+});
+```
+
+The Promise changes from
+
+```
+Pending
+```
+
+to
+
+```
+Fulfilled
+```
+
+and stores the value
+
+```
+"Done!"
+```
+
+---
+
+## What does `reject()` do?
+
+`reject()` tells JavaScript:
+
+> "The operation failed."
+
+Example:
+
+```js
+const promise = new Promise((resolve, reject) => {
+    reject("Something went wrong.");
+});
+```
+
+The Promise changes from
+
+```
+Pending
+```
+
+to
+
+```
+Rejected
+```
+
+and stores the error message.
+
+---
+
+## Example: Downloading a File
+
+```js
+const download = new Promise((resolve, reject) => {
+
+    setTimeout(() => {
+        resolve("File downloaded!");
+    }, 2000);
+
+});
+```
+
+### What happens?
+
+Immediately:
+
+```
+Pending
+```
+
+After 2 seconds:
+
+```
+Fulfilled
+
+↓
+
+"File downloaded!"
+```
+
+---
+
+## Example: Login
+
+```js
+const login = new Promise((resolve, reject) => {
+
+    const passwordCorrect = false;
+
+    if (passwordCorrect)
+        resolve("Welcome!");
+    else
+        reject("Wrong password");
+
+});
+```
+
+If the password is correct:
+
+```
+Pending
+↓
+
+Fulfilled
+↓
+
+"Welcome!"
+```
+
+Otherwise:
+
+```
+Pending
+↓
+
+Rejected
+↓
+
+"Wrong password"
+```
+
+---
+
+## Who calls `resolve()`?
+
+**You do.**
+
+Whenever your asynchronous work finishes successfully.
+
+Example:
+
+```js
+new Promise((resolve, reject) => {
+
+    // Do some work...
+
+    resolve(result);
+
+});
+```
+
+---
+
+## Who calls `reject()`?
+
+Also **you**.
+
+Whenever something goes wrong.
+
+```js
+new Promise((resolve, reject) => {
+
+    if (error)
+        reject(error);
+
+});
+```
+
+---
+
+## Getting the Result
+
+The Promise isn't the data.
+It represents data that will be available later.
+It's just the object tracking the operation.
+
+To receive its result, we use **`.then()`**.
+
+```js
+promise.then((result) => {
+    console.log(result);
+});
+```
+
+If
+
+```js
+resolve("Hello");
+```
+
+was called,
+
+then
+
+```js
+result
+```
+
+will contain
+
+```text
+"Hello"
+```
+
+---
+
+## Handling Errors
+
+If
+
+```js
+reject("Oops");
+```
+
+was called,
+
+we use **`.catch()`**.
+
+```js
+promise.catch((error) => {
+    console.log(error);
+});
+```
+
+---
+
+## Complete Example
+
+```js
+const promise = new Promise((resolve, reject) => {
+
+    const success = true;
+
+    if (success)
+        resolve("Everything worked!");
+    else
+        reject("Something failed.");
+
+});
+
+promise
+    .then((value) => {
+        console.log(value);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+```
+---
+# Key Takeaways
+
+- A **Promise** is a placeholder for a value that will be available in the future.
+- A Promise starts in the **Pending** state.
+- Calling **`resolve(value)`** changes it to **Fulfilled** and provides the result.
+- Calling **`reject(error)`** changes it to **Rejected** and provides the error.
+- Use **`.then()`** to handle successful results.
+- Use **`.catch()`** to handle failures.
+
+### Remember
+
+> **Promise = "I'm working on it. I'll either give you the result later or tell you why I couldn't."**
 
 ---
 
 ### Promise States
-
-A Promise is always in one of three states:
-
-```typescript
-// 1. PENDING - Initial state, operation not completed yet
-const promise = new Promise((resolve, reject) => {
-  // Operation in progress...
-});
-
-// 2. FULFILLED - Operation completed successfully
-const promise = new Promise((resolve, reject) => {
-  resolve("Success!");
-});
-
-// 3. REJECTED - Operation failed
-const promise = new Promise((resolve, reject) => {
-  reject(new Error("Failed!"));
-});
-```
 
 **State Transition:**
 ```
@@ -506,253 +818,36 @@ Once a Promise is fulfilled or rejected, its state **cannot change**.
 
 ---
 
-### Creating Promises
-
-```typescript
-// Basic Promise creation
-const myPromise = new Promise<string>((resolve, reject) => {
-  // Simulate async operation
-  setTimeout(() => {
-    const success = true;
-    
-    if (success) {
-      resolve("Operation successful!"); // Fulfill the promise
-    } else {
-      reject(new Error("Operation failed!")); // Reject the promise
-    }
-  }, 1000);
-});
-```
-
----
-
 ### Using Promises: .then() and .catch()
 
 ```typescript
-// Using .then() for success
-myPromise
-  .then((result) => {
-    console.log("Success:", result);
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
-
-// Chaining multiple .then()
-function fetchUser(id: number): Promise<any> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ id, name: "Mohsen" });
-    }, 1000);
-  });
+function getUser(id) {
+    return new Promise((resolve, reject) => {
+        // fetch user...
+        resolve(user);
+    });
 }
 
-function fetchUserPosts(userId: number): Promise<any[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([{ id: 1, title: "Post 1" }, { id: 2, title: "Post 2" }]);
-    }, 1000);
-  });
-}
-
-function fetchPostComments(postId: number): Promise<any[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([{ id: 1, text: "Great!" }]);
-    }, 1000);
-  });
-}
-
-// Clean promise chain!
-fetchUser(123)
-  .then((user) => {
-    console.log("Got user:", user);
-    return fetchUserPosts(user.id); // Return another promise
-  })
-  .then((posts) => {
-    console.log("Got posts:", posts);
-    return fetchPostComments(posts[0].id); // Return another promise
-  })
-  .then((comments) => {
-    console.log("Got comments:", comments);
-  })
-  .catch((error) => {
-    console.error("Error in chain:", error);
-  });
+getUser(1)
+    .then((user) => {
+        return getPosts(user.id);
+    })
+    .then((posts) => {
+        return getComments(posts[0].id);
+    })
+    .then((comments) => {
+        return getLikes(comments[0].id);
+    })
+    .then((likes) => {
+        console.log("Finally got everything!");
+        console.log(likes);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 ```
 
 **Key Benefit:** No more callback hell! Code flows top-to-bottom.
-
----
-
-### Converting Callbacks to Promises
-
-```typescript
-// Old callback style
-function fetchDataCallback(callback: (err: Error | null, data?: string) => void) {
-  setTimeout(() => {
-    const success = Math.random() > 0.3;
-    if (success) {
-      callback(null, "Data fetched!");
-    } else {
-      callback(new Error("Failed!"));
-    }
-  }, 1000);
-}
-
-// Convert to Promise
-function fetchDataPromise(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    fetchDataCallback((err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data!);
-      }
-    });
-  });
-}
-
-// Use the Promise
-fetchDataPromise()
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
-```
-
----
-
-### Promise Utility Methods
-
-#### 1. Promise.all() - Wait for All
-
-Execute multiple promises in parallel and wait for **all** to complete.
-
-```typescript
-// Simulate multiple API calls
-function fetchUsers(): Promise<any[]> {
-  return new Promise(resolve => {
-    setTimeout(() => resolve([{ id: 1, name: "User1" }]), 1000);
-  });
-}
-
-function fetchPosts(): Promise<any[]> {
-  return new Promise(resolve => {
-    setTimeout(() => resolve([{ id: 1, title: "Post1" }]), 1500);
-  });
-}
-
-function fetchComments(): Promise<any[]> {
-  return new Promise(resolve => {
-    setTimeout(() => resolve([{ id: 1, text: "Comment1" }]), 800);
-  });
-}
-
-// Run all in parallel
-Promise.all([fetchUsers(), fetchPosts(), fetchComments()])
-  .then(([users, posts, comments]) => {
-    console.log("All data fetched!");
-    console.log({ users, posts, comments });
-  })
-  .catch((error) => {
-    console.error("At least one failed:", error);
-  });
-```
-
-**Behavior:**
-- ✅ All succeed → Returns array of all results
-- ❌ Any fails → Entire Promise.all rejects
-
-**Use Case:** When you need all operations to succeed.
-
----
-
-#### 2. Promise.race() - First to Finish
-
-Returns the result of the **first** promise to settle (fulfill or reject).
-
-```typescript
-const slowPromise = new Promise((resolve) => {
-  setTimeout(() => resolve("Slow result"), 3000);
-});
-
-const fastPromise = new Promise((resolve) => {
-  setTimeout(() => resolve("Fast result"), 1000);
-});
-
-Promise.race([slowPromise, fastPromise])
-  .then((result) => {
-    console.log("Winner:", result); // "Fast result"
-  });
-```
-
-**Use Case:** Timeout patterns, fastest data source wins.
-
----
-
-#### 3. Promise.allSettled() - Wait for All, Regardless
-
-Waits for all promises, but doesn't fail if some reject.
-
-```typescript
-const promises = [
-  Promise.resolve("Success 1"),
-  Promise.reject("Error 1"),
-  Promise.resolve("Success 2"),
-];
-
-Promise.allSettled(promises)
-  .then((results) => {
-    results.forEach((result) => {
-      if (result.status === "fulfilled") {
-        console.log("Success:", result.value);
-      } else {
-        console.log("Failed:", result.reason);
-      }
-    });
-  });
-
-// Output:
-// Success: Success 1
-// Failed: Error 1
-// Success: Success 2
-```
-
-**Use Case:** When you want results from all attempts, even if some fail.
-
----
-
-#### 4. Promise.any() - First Success
-
-Returns the first promise that **fulfills**, ignoring rejections.
-
-```typescript
-const promises = [
-  Promise.reject("Error 1"),
-  Promise.resolve("Success 1"),
-  Promise.resolve("Success 2"),
-];
-
-Promise.any(promises)
-  .then((result) => {
-    console.log("First success:", result); // "Success 1"
-  })
-  .catch((error) => {
-    console.log("All failed:", error);
-  });
-```
-
-**Use Case:** Multiple fallback sources, use first successful one.
-
----
-
-### Promise Comparison Table
-
-| Method | Behavior | Use Case |
-|--------|----------|----------|
-| `Promise.all()` | Fails if any fails | Need all operations to succeed |
-| `Promise.race()` | Returns first to settle | Timeout patterns, fastest wins |
-| `Promise.allSettled()` | Never fails, returns all results | Want results from all attempts |
-| `Promise.any()` | Returns first success | Multiple fallback options |
 
 ---
 
@@ -848,7 +943,35 @@ async function getUserAsync(id: number) {
   }
 }
 ```
+---
+Example:
+```typescript
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
+async function demo() {
+  console.log("1. Inside async function");
+
+  await delay(3000);
+
+  console.log("4. Async function resumed after 3 seconds");
+}
+
+console.log("Start");
+
+demo();
+
+console.log("2. This runs immediately");
+
+setTimeout(() => {
+  console.log("3. Another callback runs while demo() is waiting");
+}, 1000);
+
+console.log("End");
+```
 ---
 
 ### Comparing All Patterns: The Evolution
@@ -1424,292 +1547,6 @@ async function shutdown() {
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 ```
-
----
-
-## 🎯 Practical Example: Building a Simple Task Scheduler
-
-Let's combine everything we learned into a practical example:
-
-```typescript
-interface Task {
-  id: number;
-  name: string;
-  delayMs: number;
-  execute: () => Promise<void>;
-}
-
-class TaskScheduler {
-  private tasks: Task[] = [];
-  private nextId: number = 1;
-  private isRunning: boolean = false;
-
-  // Add a task to the scheduler
-  addTask(name: string, delayMs: number, execute: () => Promise<void>): number {
-    const task: Task = {
-      id: this.nextId++,
-      name,
-      delayMs,
-      execute
-    };
-    
-    this.tasks.push(task);
-    console.log(`✅ Task "${name}" added (ID: ${task.id})`);
-    return task.id;
-  }
-
-  // Remove a task by ID
-  removeTask(id: number): boolean {
-    const index = this.tasks.findIndex(t => t.id === id);
-    
-    if (index !== -1) {
-      const task = this.tasks[index];
-      this.tasks.splice(index, 1);
-      console.log(`❌ Task "${task.name}" removed`);
-      return true;
-    }
-    
-    return false;
-  }
-
-  // Start executing tasks
-  async start(): Promise<void> {
-    if (this.isRunning) {
-      console.log("⚠️  Scheduler already running");
-      return;
-    }
-
-    this.isRunning = true;
-    console.log("🚀 Scheduler started");
-
-    // Execute all tasks in parallel
-    const taskPromises = this.tasks.map(task => this.executeTask(task));
-    
-    try {
-      await Promise.all(taskPromises);
-      console.log("✨ All tasks completed");
-    } catch (error) {
-      console.error("❌ Error executing tasks:", error);
-    } finally {
-      this.isRunning = false;
-    }
-  }
-
-  // Execute a single task
-  private async executeTask(task: Task): Promise<void> {
-    console.log(`⏳ Task "${task.name}" scheduled for ${task.delayMs}ms`);
-    
-    // Wait for the specified delay
-    await this.delay(task.delayMs);
-    
-    console.log(`▶️  Task "${task.name}" executing...`);
-    
-    try {
-      await task.execute();
-      console.log(`✅ Task "${task.name}" completed`);
-    } catch (error) {
-      console.error(`❌ Task "${task.name}" failed:`, error);
-      throw error;
-    }
-  }
-
-  // Helper: Promise-based delay
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // Get scheduler status
-  getStatus(): string {
-    return `
-Scheduler Status:
-- Running: ${this.isRunning}
-- Tasks: ${this.tasks.length}
-- Task List:
-${this.tasks.map(t => `  • ${t.name} (ID: ${t.id}, Delay: ${t.delayMs}ms)`).join('\n')}
-    `.trim();
-  }
-}
-
-// Usage Example
-async function main() {
-  const scheduler = new TaskScheduler();
-
-  // Add various tasks
-  scheduler.addTask("Fetch Users", 1000, async () => {
-    console.log("  📊 Fetching users from API...");
-    await new Promise(resolve => setTimeout(resolve, 500));
-    console.log("  ✓ Users fetched");
-  });
-
-  scheduler.addTask("Send Emails", 2000, async () => {
-    console.log("  📧 Sending notification emails...");
-    await new Promise(resolve => setTimeout(resolve, 800));
-    console.log("  ✓ Emails sent");
-  });
-
-  scheduler.addTask("Generate Report", 500, async () => {
-    console.log("  📈 Generating daily report...");
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log("  ✓ Report generated");
-  });
-
-  // Show status
-  console.log(scheduler.getStatus());
-  console.log();
-
-  // Start the scheduler
-  await scheduler.start();
-}
-
-// Run the example
-main().catch(error => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
-```
-
-**What This Example Demonstrates:**
-- ✅ Using Promises with async/await
-- ✅ setTimeout for delays
-- ✅ Promise.all for parallel execution
-- ✅ Error handling with try/catch
-- ✅ Process events and exit codes
-- ✅ Real-world task scheduling pattern
-
----
-
-## 📚 Summary
-
-### Key Concepts Covered
-
-**Async Patterns:**
-1. ✅ Synchronous vs Asynchronous programming
-2. ✅ Callbacks and callback hell
-3. ✅ Timers (setTimeout, setInterval)
-4. ✅ Promises and Promise utilities
-5. ✅ Async/await syntax and patterns
-
-**Node.js Runtime:**
-1. ✅ Node.js architecture (V8 + libuv)
-2. ✅ Event Loop and how it works
-3. ✅ Microtasks vs Macrotasks
-4. ✅ Single-threaded but non-blocking
-5. ✅ Process object and global objects
-
-**NOTES**
-
-1.  ✅ JavaScript is synchronous by default
-2.  ✅ Callbacks are just functions passed as parameters
-3.  ✅ Async operations (timers, network, etc.) are built-in features
-4.  ✅ Async functions use callbacks to notify you when done
-5.  ✅ Callback hell happened because async needed callbacks before Promises existed
----
-
-## 🎯 Best Practices Recap
-
-### Async Patterns
-- ✅ Use async/await for cleaner code
-- ✅ Always handle errors with try/catch
-- ✅ Use Promise.all() for parallel operations
-- ✅ Avoid mixing callback and Promise styles
-- ✅ Remember: await only works inside async functions
-
-### Timers
-- ✅ Always clear intervals to prevent memory leaks
-- ✅ Use clearTimeout/clearInterval when done
-- ✅ Remember setTimeout(fn, 0) is not immediate
-- ✅ Consider using Promises for delays
-
-### Promise Handling
-- ✅ Always handle promise rejections
-- ✅ Use Promise.all for parallel, Promise.race for timeouts
-- ✅ Chain promises properly (return inside .then)
-- ✅ Use finally for cleanup operations
-
----
-
-## 💡 Common Pitfalls to Avoid
-
-1. ❌ Forgetting to await async functions
-2. ❌ Not handling Promise rejections
-3. ❌ Sequential awaits when parallel is possible
-4. ❌ Not clearing intervals (memory leaks)
-5. ❌ Mixing callbacks and Promises
-6. ❌ Using sync operations in async code
-7. ❌ Not understanding microtask vs macrotask order
-
----
-
-## 🚀 Practice Exercises
-
-### Exercise 1: Promise Chain
-Create a function that:
-- Fetches user data (1 second delay)
-- Fetches user posts (1.5 second delay)
-- Returns combined data
-- Use promise chaining
-
-### Exercise 2: Parallel Fetching
-Modify Exercise 1 to fetch data in parallel using Promise.all
-
-### Exercise 3: Rate Limiter
-Build a rate limiter that:
-- Allows max 3 calls per second
-- Queues additional calls
-- Uses setTimeout
-
-### Exercise 4: Retry Logic
-Create a function that:
-- Retries failed operations
-- Max 3 retries with exponential backoff
-- Uses async/await
-
-### Exercise 5: Timer Challenge
-Build a stopwatch that:
-- Starts/stops/resets
-- Shows elapsed time
-- Uses setInterval
-- Cleans up properly
-
----
-
-## 🎓 Next Steps
-
-**You now understand:**
-- How JavaScript handles async operations
-- When and how to use different async patterns
-- How Node.js runtime works under the hood
-- The Event Loop and execution order
-
-**Coming Next:**
-- Session 4: HTTP from Scratch
-- Building servers with Node.js http module
-- Understanding request/response cycle
-- File system operations (using what we learned!)
-
-**Practice is key:**
-- Try the exercises above
-- Build small async projects
-- Experiment with timers and promises
-- Read Node.js documentation
-
----
-
-## 🔑 Key Takeaways
-
-### Pattern Evolution
-```
-Callbacks → Promises → Async/Await
-(Hell)      (Better)    (Best!)
-```
-
-### The Golden Rules
-1. **Async/await is syntactic sugar** - It's still Promises underneath
-2. **Event Loop never stops** - It continuously checks for work
-3. **Microtasks run first** - Before any macrotasks
-4. **Single thread for JS** - But parallel I/O operations
-5. **Always handle errors** - Unhandled promises crash your app
-
 ---
 
 ## 📖 Additional Resources
@@ -1724,31 +1561,3 @@ Callbacks → Promises → Async/Await
 - [JavaScript Event Loop Visualization](https://www.jsv9000.app/)
 
 ---
-
-## ✅ Session Checklist
-
-Before moving to the next session, make sure you can:
-
-```
-□ Explain synchronous vs asynchronous code
-□ Write callback functions
-□ Understand callback hell problem
-□ Use setTimeout and setInterval
-□ Create and use Promises
-□ Chain promises with .then()
-□ Use Promise.all, Promise.race
-□ Write async/await functions
-□ Handle errors with try/catch
-□ Explain the Event Loop
-□ Understand microtasks vs macrotasks
-□ Use process object
-□ Access command line arguments
-```
-
-**If you can do all of these, you're ready for HTTP and servers!** 🎓
-
----
-
-**Remember:** Async programming is the foundation of Node.js backend development. Master these concepts, and everything else will make sense! 🚀
-
-Happy coding! 💻

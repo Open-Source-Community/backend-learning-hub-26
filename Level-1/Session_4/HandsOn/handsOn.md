@@ -1,51 +1,43 @@
 ## 📝 Practice Tasks
 
-### Task 1: Basic Server
+> Goal: build a plain Node.js HTTP server — **no Express** — with one working route. Nothing here should need a package outside Node's built-in `http` module.
+
+### Task 1: Hello Server
 
 Build a server that:
 
-- Responds "Hello World" at `/`
-- Responds with current time at `/time`
-- Returns 404 for other routes
+- Responds `"Hello, World!"` at `/`
+- Returns a `404` for any other route
+
+This is the whole point of the session — get comfortable with `http.createServer`, `req.url`, and `res.end` before adding anything else.
 
 ---
 
-### Task 2: Calculator API
+### Task 2: One More Route
 
-Build an API with:
+Extend your Task 1 server with a second route:
 
-- `GET /add?a=5&b=3` → Returns sum
-- `GET /subtract?a=10&b=4` → Returns difference
-- `GET /multiply?a=6&b=7` → Returns product
-- `GET /divide?a=20&b=4` → Returns quotient
+- `/time` → responds with the current server time as plain text
+
+Keep using plain `if / else if` — this is manual routing on purpose, so you can feel what Express automates next session.
 
 ---
 
-### Task 3: User Management API
+### Stretch Goal (optional): Read the Request
 
-Build a complete CRUD API for users:
+Log the incoming method and URL to your terminal for every request, before you respond:
 
 ```typescript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  age: number;
-}
+console.log(req.method, req.url);
 ```
 
-Endpoints:
-
-- `GET /users` - List all users
-- `GET /users/:id` - Get single user
-- `POST /users` - Create user
-- `PUT /users/:id` - Update user
-- `DELETE /users/:id` - Delete user
-
-Include validation:
-
-- Name: required, 2-50 characters
-- Email: required, valid format
-- Age: required, 13-120
+Then visit a few different paths in your browser and watch your terminal — this is the fastest way to *see* the request/response cycle happening in real time.
 
 ---
+
+### ✅ Done When
+
+- `node server.ts` (or your build/run command) starts without errors
+- Visiting `http://localhost:3000/` shows your hello message
+- Visiting `http://localhost:3000/time` shows the current time
+- Visiting anything else shows a 404
