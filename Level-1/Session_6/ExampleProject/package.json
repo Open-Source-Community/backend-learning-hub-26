@@ -2,7 +2,7 @@
   "name": "auth-proj",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "dependencies": {
     "accepts": "^2.0.0",
     "bcryptjs": "^3.0.3",

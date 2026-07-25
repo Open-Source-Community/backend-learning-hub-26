@@ -1,17 +1,20 @@
-import express from "exress"
-import dorenv from "dorenv"
-import cookieParser from "cookieParser"
+import dotenv from "dotenv"
+import express from "express"
+import {router} from "./routes/routes"
+import cookieparser from "cookie-parser"
+dotenv.config()
+const Port = process.env.PORT || 3000
 
-dorenv.config()
-
-const PORT =process.env.PORT
 const app =express()
 
+
+app.use(cookieparser())
 app.use(express.json())
-app.use(cookieParser)
 
-app.listen(PORT ,()=>{
-  console.log("server is running")
-}) 
+app.use("/auth", router)
 
+app.listen(Port ,() => {
+console.log (`server is runnimg on port ${Port}`)
+}
+)
 
